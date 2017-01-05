@@ -1,15 +1,13 @@
 package netReader.ApiController.Novel;
 
-import netReader.Model.Article;
-import netReader.Model.ArticleRepository;
-import netReader.Model.Chapter;
-import netReader.Model.ChapterRepository;
+import netReader.Controller.Spider.ImportNovel;
+import netReader.Controller.User.UserAuthority;
+import netReader.Model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,11 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping("/api/Novel/{novelId}")
+@RequestMapping("/api/novel/{novelId}")
 public class ChapterApiController {
+
+    @Autowired
+    private NovelRepository novelRepository;
 
     @Autowired
     private ChapterRepository chapterRepository;
@@ -28,22 +29,42 @@ public class ChapterApiController {
     @Autowired
     private ArticleRepository articleRepository;
 
+    @Autowired
+    private ImportNovel importNovel;
+
+    @Autowired
+    private UserAuthority userAuthority;
+
     @RequestMapping(value="/chapter", method = RequestMethod.GET)
     public @ResponseBody List<Chapter> getChapter(
-            @RequestParam(value = "novelId") Long novelId
+            @PathVariable(value = "novelId") Long novelId
     ) {
         return chapterRepository.findAllByNovelId(novelId);
     }
 
-    @RequestMapping(value="/chapter/{id}", method = RequestMethod.GET)
+    @RequestMapping(value="/chapter/{subId}", method = RequestMethod.GET)
     public @ResponseBody Article getArticle(
-            @RequestParam(value = "id") Long id
+            @PathVariable(value = "novelId") Long novelId,
+            @PathVariable(value = "subId") Long subId
     ) {
-        List<Long> ids = new ArrayList<Long>();
-        ids.add(id);
-        Chapter chapter = chapterRepository.findAllById(ids).get(0);
-        ids.clear();
-        ids.add(chapter.getArticleId());
-        return articleRepository.findAllById(ids).get(0);
+        return articleRepository.findById(chapterRepository.findByNovelIdAndSubId(novelId, subId).getArticleId());
+    }
+
+    @RequestMapping(value="/chapter/{id}/import", method = RequestMethod.PUT)
+    public ResponseEntity<Article> importArticle(
+            @PathVariable(value = "novelId") Long novelId,
+            @PathVariable(value = "id") Long id,
+            @SessionAttribute(value="currentUser", required=false) User currentUser
+    ) {
+        if (!userAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
+            return new ResponseEntity<Article>((Article) null, HttpStatus.FORBIDDEN);
+
+        try {
+            return new ResponseEntity<Article>(importNovel.importNovelById(novelRepository.findById(novelId), id), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImportNovel {
 
+    private static Long SLEEP_TIMES = 0L;
+
     @Autowired
     private NovelRepository novelRepository;
 
@@ -21,34 +23,48 @@ public class ImportNovel {
     @Autowired
     private ArticleRepository articleRepository;
 
+    public Article importNovelById(Novel novel, Long id) throws Exception {
+        JSONObject data =  Syosetu.Analysis(Spider.getHtml(novel.getUrl() + id.intValue()));
+
+        Chapter chapter = chapterRepository.findByNovelIdAndSubId(novel.getId(), id);
+        Article article = new Article();
+        if (chapter == null) {
+            chapter = new Chapter();
+        }   else {
+            article = articleRepository.findById(chapter.getArticleId());
+        }
+
+        article.setAuthor(novel.getAuthor());
+        article.setTitle(data.get("title").toString());
+        article.setContent(data.get("content").toString());
+        articleRepository.save(article);
+
+        chapter.setNovelId(novel.getId());
+        chapter.setSubId(id);
+        chapter.setSubTitle(article.getTitle());
+        chapter.setArticleId(article.getId());
+        chapterRepository.save(chapter);
+
+        novel.setChapters(id);
+        novelRepository.save(novel);
+
+        return article;
+    }
+
     @Async
     public void run(Novel novel) {
         System.out.println("import novel 《" + novel.getName() + "》");
-        Integer chapterId = novel.getChapters() + 1;
+        Long id = novel.getChapters();
         while (true) {
             try {
-                JSONObject data = Syosetu.Analysis(Spider.getHtml(novel.getUrl() + chapterId));
-
-                Article article = new Article();
-                article.setAuthor(novel.getAuthor());
-                article.setTitle(data.get("title").toString());
-                article.setContent(data.get("content").toString());
-                articleRepository.save(article);
-
-                Chapter chapter = new Chapter();
-                chapter.setNovelId(novel.getId());
-                chapter.setSubId(new Long(chapterId));
-                chapter.setSubTitle(article.getTitle());
-                chapter.setArticleId(article.getId());
-                chapterRepository.save(chapter);
+                id += 1L;
+                importNovelById(novel, id);
+                Thread.sleep(SLEEP_TIMES);
             }   catch (Exception e) {
-                System.out.println(e);
-                System.out.println("Error occurred @ Get novel 《" + novel.getName() + "》 chapter " + chapterId);
+                System.out.println(e.toString());
+                System.out.println("Error occurred @ Get novel 《" + novel.getName() + "》 chapter " + id);
                 break;
             }
-            chapterId = chapterId + 1;
         }
-        novel.setChapters(chapterId - 1);
-        novelRepository.save(novel);
     }
 }

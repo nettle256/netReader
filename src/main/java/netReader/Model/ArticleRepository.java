@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     public List<Article> findAllById(List<Long> ids);
+    public Article findById(Long id);
 }

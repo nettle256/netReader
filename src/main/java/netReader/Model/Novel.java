@@ -20,7 +20,7 @@ public class Novel {
     private String url;
     private String source;
     private Boolean deleted = false;
-    private Integer chapters = 0;
+    private Long chapters = 0L;
 
     public Long getId() {
         return id;
@@ -78,11 +78,11 @@ public class Novel {
         this.deleted = deleted;
     }
 
-    public Integer getChapters() {
+    public Long getChapters() {
         return chapters;
     }
 
-    public void setChapters(Integer chapters) {
+    public void setChapters(Long chapters) {
         this.chapters = chapters;
     }
 }

@@ -8,6 +8,7 @@ import java.util.List;
  * Created by Nettle on 2017/1/4.
  */
 public interface NovelRepository extends JpaRepository<Novel, Long> {
+    public Novel findById(Long id);
     public List<Novel> findAllById(List<Long> ids);
     public List<Novel> findAllByDeleted(Boolean deleted);
 }
