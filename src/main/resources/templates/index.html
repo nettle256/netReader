@@ -5,7 +5,11 @@
     <title>Title</title>
     <div th:include="fragment/header :: lib"></div>
 </head>
-<body>
-    Hello World
+<body ng-app="netReaderApp" ng-controller="netReaderCtrl">
+    <button class="mdui-btn" ng-click="logout()">Logout</button>
+    <footer>
+        <div th:include="fragment/footer :: lib"></div>
+        <div th:include="fragment/footer :: netReader"></div>
+    </footer>
 </body>
 </html>

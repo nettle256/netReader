@@ -19,7 +19,7 @@ public class UserAuthority {
     public static Long USER_ADMIN = 4L;
     public static Long ADMIN = 8L;
 
-    public Boolean checkCurrentUserAuthority(
+    public static Boolean checkCurrentUserAuthority(
             Long requestAuthority,
             User currentUser
     ) {

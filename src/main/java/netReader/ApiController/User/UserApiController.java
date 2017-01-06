@@ -41,7 +41,7 @@ public class UserApiController {
     private ResponseEntity<User> createUser(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "password") String password,
-            @RequestParam(value = "description") String description,
+            @RequestParam(value = "description", required=false) String description,
             @SessionAttribute(value="currentUser", required=false) User currentUser
     )   {
         if (currentUser != null)
@@ -51,6 +51,7 @@ public class UserApiController {
             User user = new User();
             user.setUsername(username);
             user.setPassword(MD5.md5(password));
+            if (description == null) description = "";
             user.setDescription(description);
             user.setAuthority(UserAuthority.USER);
             userRepository.save(user);
