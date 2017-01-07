@@ -28,10 +28,8 @@ public class Syosetu {
     public static JSONObject Analysis(Document document) {
 
         JSONObject ret = new JSONObject();
-        JSONArray article_title = new JSONArray();
         JSONArray article_content = new JSONArray();
 
-        article_title.put(document.select(".novel_subtitle").html());
         String content_pre = clear(document.select("#novel_p").html());
         String content = clear(document.select("#novel_honbun").html());
         String content_after = clear(document.select("#novel_a").html());
@@ -54,7 +52,7 @@ public class Syosetu {
                 article_content.put(after_lines[i]);
         }
 
-        ret.put("title", article_title);
+        ret.put("title", document.select(".novel_subtitle").html());
         ret.put("content", article_content);
 
         return ret;

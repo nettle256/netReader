@@ -1,0 +1,28 @@
+<div id="article">
+    <div class="title mdui-color-theme mdui-shadow-4">
+        <span ui-sref="chapter({novelId:chapter.novelId})" ng-bind="chapter.novelCnName || chapter.novelName">小说名称</span> / #<span ng-bind="chapter.subId"></span> <span ng-bind="chapter.cnSubTitle || chapter.subTitle"></span>
+    </div>
+    <div class="mdui-row mdui-p-x-1">
+        <form class="mdui-textfield mdui-col-sm-4" name="cnSubTitleForm" role="form">
+            <input class="mdui-textfield-input" type="text" placeholder="暂无译名" ng-model="subTitle" ng-disabled="!(user.authority == 'user_admin' || user.authority == 'admin' || user.authority == 'translator')"/>
+            <button class="mdui-btn mdui-btn-icon tool-btn pull-right" ng-show="chapter.cnSubTitle != subTitle" ng-click="updateSubTitle()" mdui-tooltip="{position: 'right',content: '保存'}"
+                    style="position: absolute;right: 0;top: 0;">
+                <i class="mdui-icon material-icons">&#xe5ca;</i>
+            </button>
+        </form>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" ui-sref="chapter({novelId:chapter.novelId})" title="返回章节列表">
+            <i class="mdui-icon material-icons">&#xe5c4;</i>
+        </button>
+        <a href="{{chapter.url}}" title="查看原文网站" target="_blank">
+            <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised tool-btn-web">Web</button>
+        </a>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised tool-btn-article" title="显示原文">あ</button>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" title="显示机器翻译">
+            <i class="mdui-icon material-icons">&#xe927;</i>
+        </button>
+    </div>
+    <div class="nr_container">
+        <net-reader-article article="chapter.content" title="原文"></net-reader-article>
+        <net-reader-article article="chapter.content"></net-reader-article>
+    </div>
+</div>

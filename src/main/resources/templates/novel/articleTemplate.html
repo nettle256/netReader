@@ -1,0 +1,14 @@
+<div class="net_reader_honbun">
+    <div class=" net_reader_body net_reader_article">
+        <div class="panel-header">
+            <div class="nr-header-text" ng-bind="title"></div>
+            <i class="mdui-icon material-icons mdui-text-color-white nr-header-btn pull-right" title="关闭原文">&#xe5cd;</i>
+        </div>
+        <div class="panel-body">
+            <div ng-repeat="line in article track by $index" class="nr_line">
+                {{line}}
+            </div>
+        </div>
+        <div class="panel-footer"></div>
+    </div>
+</div>

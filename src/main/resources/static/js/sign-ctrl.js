@@ -22,16 +22,21 @@ angular.module('netReaderSignApp', [])
 
         $scope.signUp = function () {
             $http
-                .post(['api','login'].join('/'), $scope.user)
+                .post(['api','user'].join('/'), $scope.newUser)
                 .then(function (result) {
-                    window.location.reload();
+                    $http
+                        .post(['api','login'].join('/'), $scope.newUser)
+                        .then(function (result) {
+                            window.location.reload();
+                        }, function (result) {
+                            $scope.signUpMessage = result.data.message;
+                        });
                 }, function (result) {
-                    $scope.message = result.data.message;
+                    $scope.signUpMessage = result.data.message;
                 });
         };
         
         $scope.checkPasswordSame = function () {
             $scope.isPasswordSame = ($scope.newUser.password === $scope.newUser.repeat);
-            console.log($scope.isPasswordSame);
         }
     }]);

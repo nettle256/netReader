@@ -1,0 +1,54 @@
+<div id="novel-edit">
+    <div class="title mdui-color-theme mdui-shadow-4" ng-bind="novel.cnName || novel.name || '新建小说'"></div>
+    <form class="mdui-p-x-1" name="novelForm" role="form">
+        <div class="mdui-row">
+            <div class="mdui-textfield mdui-col-sm-6">
+                <label class="mdui-textfield-label">小说名<span class="need_star">*</span></label>
+                <input class="mdui-textfield-input" type="text" ng-model="novel.name" required="true"/>
+            </div>
+        </div>
+        <div class="mdui-row">
+            <div class="mdui-textfield mdui-col-sm-6">
+                <label class="mdui-textfield-label">中文名</label>
+                <input class="mdui-textfield-input" type="text" ng-model="novel.cnName"/>
+            </div>
+        </div>
+        <div class="mdui-row">
+            <div class="mdui-textfield mdui-col-sm-6">
+                <label class="mdui-textfield-label">作者</label>
+                <input class="mdui-textfield-input" type="text" ng-model="novel.author"/>
+            </div>
+        </div>
+        <div class="mdui-row" ng-if="!isNew">
+            <div class="mdui-textfield mdui-col-sm-6">
+                <label class="mdui-textfield-label">章节数</label>
+                <input class="mdui-textfield-input" type="text" ng-model="novel.chapters" disabled=""/>
+            </div>
+        </div>
+        <div class="mdui-row">
+            <div class="mdui-textfield mdui-col-sm-12">
+                <label class="mdui-textfield-label">源网站</label>
+                <input class="mdui-textfield-input" type="text" ng-model="novel.source"/>
+            </div>
+        </div>
+        <div class="mdui-row">
+            <div class="mdui-textfield mdui-col-sm-12">
+                <label class="mdui-textfield-label">源地址<span class="need_star">*</span></label>
+                <input class="mdui-textfield-input" type="text" ng-model="novel.url" required="true"/>
+                <div class="mdui-textfield-error">源地址不能为空</div>
+            </div>
+        </div>
+        <div class="warning-info mdui-color-pink-100 mdui-text-color-pink" ng-if="novel.deleted">
+            <i class="mdui-icon material-icons">&#xe002;</i>注意：当前小说处于删除状态
+        </div>
+        <div class="mdui-row btn-group">
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme"
+                    ng-disabled="novelForm.$invalid || !novelForm.$dirty || saving" ng-click="save()">
+                {{(isNew ? '提交' : '保存') + (saving ? '中' : '')}}
+            </button>
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" ng-click="cancel()">{{novelForm.$dirty ? '取消' : '返回'}}</button>
+            <button ng-if="!isNew" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme pull-right" ng-click="delete()" ng-disabled="deleting">{{novel.deleted ? '恢复' : '删除'}}</button>
+            <button ng-if="!isNew" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme pull-right" ng-click="scan()" ng-disabled="novel.scanSubmit || novel.scanning">{{novel.scanSubmit ? '申请扫描中' : novel.scanning ? '正在扫描章节':'扫描章节'}}</button>
+        </div>
+    </form>
+</div>

@@ -24,6 +24,7 @@ public class ImportNovel {
     private ArticleRepository articleRepository;
 
     public Article importNovelById(Novel novel, Long id) throws Exception {
+        System.out.println("import novel 《" + novel.getName() + "》 chapter " + id);
         JSONObject data =  Syosetu.Analysis(Spider.getHtml(novel.getUrl() + id.intValue()));
 
         Chapter chapter = chapterRepository.findByNovelIdAndSubId(novel.getId(), id);
@@ -34,14 +35,12 @@ public class ImportNovel {
             article = articleRepository.findById(chapter.getArticleId());
         }
 
-        article.setAuthor(novel.getAuthor());
-        article.setTitle(data.get("title").toString());
         article.setContent(data.get("content").toString());
         articleRepository.save(article);
 
         chapter.setNovelId(novel.getId());
         chapter.setSubId(id);
-        chapter.setSubTitle(article.getTitle());
+        chapter.setSubTitle(data.get("title").toString());
         chapter.setArticleId(article.getId());
         chapterRepository.save(chapter);
 
@@ -61,6 +60,8 @@ public class ImportNovel {
                 importNovelById(novel, id);
                 Thread.sleep(SLEEP_TIMES);
             }   catch (Exception e) {
+                novel.setScanning(false);
+                novelRepository.save(novel);
                 System.out.println(e.toString());
                 System.out.println("Error occurred @ Get novel 《" + novel.getName() + "》 chapter " + id);
                 break;

@@ -1,0 +1,43 @@
+#novel {
+  .mdui-row {
+    position: relative;
+    .tool-btn {
+      margin-top: 16px;
+      .mdui-icon {
+        padding: 0;
+      }
+    }
+    .pull-right {
+      float: right;
+      margin-right: 8px;
+    }
+  }
+
+  .mdui-table-fluid {
+    margin-top: 5px;
+    border-radius: 2px;
+    tr {
+      cursor: pointer;
+      i {
+        display: none;
+        }
+      &:hover {
+        i {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+#novel-edit {
+  @import 'edit';
+}
+
+#chapter {
+  @import 'chapter';
+}
+
+#article {
+  @import 'article';
+}

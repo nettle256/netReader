@@ -3,6 +3,7 @@ package netReader.ApiController.Novel;
 import netReader.Controller.Spider.ImportNovel;
 import netReader.Controller.Spider.ScheduleUpdate;
 import netReader.Controller.User.UserAuthority;
+import netReader.JsonModel.JMessage;
 import netReader.Model.Article;
 import netReader.Model.Novel;
 import netReader.Model.NovelRepository;
@@ -29,11 +30,6 @@ public class NovelApiController {
     @Autowired
     private ImportNovel importNovel;
 
-    @Autowired
-    private UserAuthority userAuthority;
-
-    private ScheduleUpdate scheduleUpdate;
-
     @RequestMapping(value="", method = RequestMethod.GET)
     public @ResponseBody List<Novel> getNovel() {
         return novelRepository.findAllByDeleted(false);
@@ -58,22 +54,11 @@ public class NovelApiController {
 
     @RequestMapping(value="", method = RequestMethod.POST)
     public ResponseEntity<Novel> createNovel(
-            @RequestParam(value="name") String name,
-            @RequestParam(value="cnName", required = false) String cnName,
-            @RequestParam(value="author", required = false) String author,
-            @RequestParam(value="url") String url,
-            @RequestParam(value="source") String source,
+            @RequestBody Novel novel,
             @SessionAttribute(value="currentUser", required=false) User currentUser
     )   {
-        if (!userAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
             return new ResponseEntity<Novel>((Novel) null, HttpStatus.FORBIDDEN);
-
-        Novel novel = new Novel();
-        novel.setName(name);
-        novel.setCnName(cnName);
-        novel.setAuthor(author);
-        novel.setUrl(url);
-        novel.setSource(source);
         try {
             novelRepository.save(novel);
             return new ResponseEntity<Novel>(novel, HttpStatus.CREATED);
@@ -85,23 +70,14 @@ public class NovelApiController {
     @RequestMapping(value="/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Novel> updateNovel(
             @PathVariable(value="id") Long id,
-            @RequestParam(value="name", required = false) String name,
-            @RequestParam(value="cnName", required = false) String cnName,
-            @RequestParam(value="author", required = false) String author,
-            @RequestParam(value="url", required = false) String url,
-            @RequestParam(value="source", required = false) String source,
+            @RequestBody Novel novel,
             @SessionAttribute(value="currentUser", required=false) User currentUser
     )   {
-        if (!userAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
             return new ResponseEntity<Novel>((Novel) null, HttpStatus.FORBIDDEN);
 
         try {
-            Novel novel = novelRepository.findById(id);
-            if (name   != null) novel.setName(name);
-            if (cnName != null) novel.setCnName(cnName);
-            if (author != null) novel.setAuthor(author);
-            if (url    != null) novel.setUrl(url);
-            if (source != null) novel.setSource(source);
+            novel.setId(id);
             novelRepository.save(novel);
             return new ResponseEntity<Novel>(novel, HttpStatus.OK);
         }   catch (Exception e) {
@@ -114,7 +90,7 @@ public class NovelApiController {
             @PathVariable(value="id") Long id,
             @SessionAttribute(value="currentUser", required=false) User currentUser
     )   {
-        if (!userAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
             return new ResponseEntity<Novel>((Novel) null, HttpStatus.FORBIDDEN);
 
         try {
@@ -126,20 +102,59 @@ public class NovelApiController {
     }
 
     @RequestMapping(value="/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Novel> deleteNovel(
+    public ResponseEntity<JMessage> deleteNovel(
             @PathVariable(value="id") Long id,
             @SessionAttribute(value="currentUser", required=false) User currentUser
     )   {
-        if (!userAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
-            return new ResponseEntity<Novel>((Novel) null, HttpStatus.FORBIDDEN);
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
+            return new ResponseEntity<JMessage>(new JMessage("错误：没有权限"), HttpStatus.FORBIDDEN);
 
         try {
             Novel novel = novelRepository.findById(id);
             novel.setDeleted(true);
             novelRepository.save(novel);
-            return new ResponseEntity<Novel>(novel, HttpStatus.OK);
+            return new ResponseEntity<JMessage>(new JMessage("成功：删除小说 " + novel.getName()), HttpStatus.OK);
         }   catch (Exception e) {
-            return new ResponseEntity<Novel>((Novel) null, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<JMessage>(new JMessage("错误：系统错误"), HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @RequestMapping(value="/{id}/recover", method = RequestMethod.PUT)
+    public ResponseEntity<JMessage> recoverNovel(
+            @PathVariable(value="id") Long id,
+            @SessionAttribute(value="currentUser", required=false) User currentUser
+    )   {
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
+            return new ResponseEntity<JMessage>(new JMessage("错误：没有权限"), HttpStatus.FORBIDDEN);
+
+        try {
+            Novel novel = novelRepository.findById(id);
+            novel.setDeleted(false);
+            novelRepository.save(novel);
+            return new ResponseEntity<JMessage>(new JMessage("成功：恢复小说 " + novel.getName()), HttpStatus.OK);
+        }   catch (Exception e) {
+            return new ResponseEntity<JMessage>(new JMessage("错误：系统错误"), HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @RequestMapping(value="/{id}/scan", method = RequestMethod.PUT)
+    public ResponseEntity<JMessage> scanNovel(
+            @PathVariable(value="id") Long id,
+            @SessionAttribute(value="currentUser", required=false) User currentUser
+    )   {
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
+            return new ResponseEntity<JMessage>(new JMessage("错误：没有权限"), HttpStatus.FORBIDDEN);
+
+        try {
+            Novel novel = novelRepository.findById(id);
+            if (novel.getScanning())
+                return new ResponseEntity<JMessage>(new JMessage("错误：该小说正在扫描中"), HttpStatus.FORBIDDEN);
+            novel.setScanning(true);
+            importNovel.run(novel);
+            novelRepository.save(novel);
+            return new ResponseEntity<JMessage>(new JMessage("成功：开始扫描小说 " + novel.getName()), HttpStatus.OK);
+        }   catch (Exception e) {
+            return new ResponseEntity<JMessage>(new JMessage("错误：系统错误"), HttpStatus.NOT_ACCEPTABLE);
         }
     }
 }

@@ -1,5 +1,8 @@
 package netReader.JsonModel;
 
+import netReader.Controller.User.UserAuthority;
+import netReader.Model.User;
+
 /**
  * Created by Nettle on 2017/1/6.
  */
@@ -40,4 +43,5 @@ public class JUser {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8" />
-    <title>Title</title>
+    <title>Net Reader</title>
     <div th:include="fragment/header :: lib"></div>
 </head>
 <body id="sign" ng-app="netReaderSignApp" ng-controller="netReaderSignCtrl" class="mdui-theme-primary-deep-purple mdui-theme-accent-deep-purple">
@@ -10,18 +10,18 @@
         <div class="sign-box">
             <div class="mdui-typo-display-2-opacity">Net Reader</div>
             <div class="mdui-tab mdui-tab-centered" mdui-tab="">
-                <a href="#sign-in">Sign In</a>
-                <a href="#sign-up">Sign Up</a>
+                <a href="#sign-in" class="mdui-tab-active">登录</a>
+                <a href="#sign-up">注册</a>
             </div>
             <form id="sign-in" class="sign-form mdui-p-x-2" name="signInForm" role="form">
                 <div class="mdui-textfield">
                     <i class="mdui-icon material-icons">&#xe853;</i>
-                    <input class="mdui-textfield-input" type="text" placeholder="Username" ng-model="user.username"
+                    <input class="mdui-textfield-input" type="text" placeholder="用户名" ng-model="user.username"
                         required="true"/>
                 </div>
                 <div class="mdui-textfield">
                     <i class="mdui-icon material-icons">&#xe0da;</i>
-                    <input class="mdui-textfield-input" type="password" placeholder="Password" ng-model="user.password"
+                    <input class="mdui-textfield-input" type="password" placeholder="密码" ng-model="user.password"
                         required="true"/>
                 </div>
                 <div class="mdui-textfield" ng-if="message">
@@ -29,28 +29,33 @@
                 </div>
                 <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent mdui-btn-block"
                         ng-disabled="signInForm.$invalid" ng-click="signIn()">
-                    Sign In
+                    登录
                 </button>
             </form>
             <form id="sign-up" class="sign-form mdui-p-x-2" name="signUpForm" role="form">
                 <div class="mdui-textfield">
-                    <label class="mdui-textfield-label">Username</label>
+                    <label class="mdui-textfield-label">用户名</label>
                     <input class="mdui-textfield-input" type="text" ng-model="newUser.username" maxlength="32" required="true"/>
                     <div class="mdui-textfield-error">用户名不能为空</div>
                 </div>
                 <div class="mdui-textfield">
-                    <label class="mdui-textfield-label">Password</label>
+                    <label class="mdui-textfield-label">设置密码</label>
                     <input class="mdui-textfield-input" type="password" ng-model="newUser.password" minlength="6" maxlength="16" required="true"
                            ng-change="checkPasswordSame()"/>
                     <div class="mdui-textfield-error">密码长度至少为6位</div>
                 </div>
-                <div class="mdui-textfield" ng-class="{false: 'sign-up-invalid'}[isPasswordSame]">
-                    <label class="mdui-textfield-label">Repeat Password</label>
-                    <input class="mdui-textfield-input" type="password" ng-model="newUser.repeat" ng-change="checkPasswordSame()"/>
-                    <div class="mdui-textfield-error">两次输入的密码不同</div>
+                <div ng-class="{false: 'mdui-textfield-invalid'}[isPasswordSame]">
+                    <div class="mdui-textfield">
+                        <label class="mdui-textfield-label">确认密码</label>
+                        <input class="mdui-textfield-input" type="password" ng-model="newUser.repeat" ng-change="checkPasswordSame()"/>
+                        <div class="mdui-textfield-error">两次输入的密码不同</div>
+                    </div>
+                </div>
+                <div class="mdui-textfield" ng-if="signUpMessage">
+                    <div class="sign-message" ng-bind="signUpMessage"></div>
                 </div>
                 <button class="mdui-btn mdui-ripple mdui-btn-raised mdui-color-theme-accent mdui-btn-block"
-                        ng-disabled="signUpForm.$invalid || !isPasswordSame" >Sign Up</button>
+                        ng-disabled="signUpForm.$invalid || !isPasswordSame" ng-click="signUp()">注册</button>
             </form>
         </div>
     </div>

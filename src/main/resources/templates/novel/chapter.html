@@ -1,0 +1,66 @@
+<div id="chapter">
+    <div class="title mdui-color-theme mdui-shadow-4">
+        <span ui-sref="chapter({novelId:novel.id})" ng-bind="novel.cnName || novel.name">小说名称</span> / 章节目录
+    </div>
+    <div class="mdui-row">
+        <div class="mdui-textfield mdui-col-sm-4">
+            <i class="mdui-icon material-icons mdui-text-color-theme">&#xe8b6;</i>
+            <input class="mdui-textfield-input" type="text" placeholder="查找章节" ng-model="keyword"/>
+            <button class="mdui-btn mdui-btn-icon tool-btn pull-right" ng-show="keyword &amp;&amp; keyword.length" ng-click="keyword = '';" mdui-tooltip="{position: 'right',content: '清空关键字'}"
+                    style="position: absolute;right: 0;top: 0;">
+                <i class="mdui-icon material-icons">&#xe5cd;</i>
+            </button>
+        </div>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" ui-sref="novel" title="返回小说列表">
+            <i class="mdui-icon material-icons">&#xe5c4;</i>
+        </button>
+        <a href="{{novel.url}}" title="查看原文网站" target="_blank">
+            <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised tool-btn-web">Web</button>
+        </a>
+        <!--<div ng-if="user.authority == 'user_admin' || user.authority == 'admin'">-->
+            <!--<button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" ui-sref="novel_new">-->
+                <!--<i class="mdui-icon material-icons">&#xe145;</i>-->
+            <!--</button>-->
+            <!--<button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" mdui-menu="{target: '#novel_filter_menu'}">-->
+                <!--<i class="mdui-icon material-icons">&#xe8ef;</i>-->
+            <!--</button>-->
+            <!--<ul class="mdui-menu" id="novel_filter_menu">-->
+                <!--<li class="mdui-menu-item">-->
+                    <!--<a class="mdui-ripple" ng-click="showNovels('')">未删除</a>-->
+                <!--</li>-->
+                <!--<li class="mdui-menu-item">-->
+                    <!--<a class="mdui-ripple" ng-click="showNovels('/trash')">已删除</a>-->
+                <!--</li>-->
+                <!--<li class="mdui-menu-item">-->
+                    <!--<a class="mdui-ripple" ng-click="showNovels('/all')">全部</a>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</div>-->
+    </div>
+    <div class="mdui-table-fluid mdui-shadow-0">
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+            <tr class="mdui-text-color-theme">
+                <th style="width: 50px">章节序号</th>
+                <th>章节名</th>
+                <th>章节中文名</th>
+                <!--<th>最后扫描日期</th>-->
+                <th ng-if="user.authority == 'user_admin' || user.authority == 'admin'" style="width: 40px;"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="chapter in chapters | filter:keyword">
+                <td ui-sref="article({novelId:novel.id,subId:chapter.subId})">{{'# ' + chapter.subId}}</td>
+                <td ui-sref="article({novelId:novel.id,subId:chapter.subId})" ng-bind="chapter.subTitle">爱书的下克上</td>
+                <td ui-sref="article({novelId:novel.id,subId:chapter.subId})" ng-bind="chapter.cnSubTitle || '暂无译名'">香月美夜</td>
+                <!--<td ng-bind="novel.author">2017-01-02</td>-->
+                <td ng-if="user.authority == 'user_admin' || user.authority == 'admin'">
+                    <button class="mdui-btn mdui-btn-icon mdui-ripple novel-config" title="重新扫描" ng-click="rescan(chapter)">
+                        <i class="mdui-icon material-icons">&#xe5d5;</i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

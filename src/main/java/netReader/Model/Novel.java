@@ -1,9 +1,8 @@
 package netReader.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 
 /**
  * Created by Nettle on 2017/1/4.
@@ -14,13 +13,22 @@ public class Novel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable=false)
     private String name;
+
     private String cnName;
     private String author;
+
+    @Column(nullable=false)
     private String url;
+
     private String source;
+
     private Boolean deleted = false;
+
     private Long chapters = 0L;
+
+    private Boolean scanning = false;
 
     public Long getId() {
         return id;
@@ -84,5 +92,13 @@ public class Novel {
 
     public void setChapters(Long chapters) {
         this.chapters = chapters;
+    }
+
+    public Boolean getScanning() {
+        return scanning;
+    }
+
+    public void setScanning(Boolean scanning) {
+        this.scanning = scanning;
     }
 }

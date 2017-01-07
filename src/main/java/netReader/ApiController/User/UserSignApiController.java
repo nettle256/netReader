@@ -31,23 +31,23 @@ public class UserSignApiController {
             ModelMap model
     )   {
         if (model.containsAttribute("currentUser"))
-            return new ResponseEntity<JMessage>(new JMessage("Error: Already login"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<JMessage>(new JMessage("错误:用户已登录"), HttpStatus.FORBIDDEN);
 
         User user = userRepository.findByUsername(loginUser.getUsername());
         if (user == null || user.getDeleted())
-            return new ResponseEntity<JMessage>(new JMessage("Error: Username does not exist"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<JMessage>(new JMessage("错误:该用户不存在"), HttpStatus.FORBIDDEN);
         if (user.getNuked())
-            return new ResponseEntity<JMessage>(new JMessage("Error: User has been nuked"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<JMessage>(new JMessage("错误:该用户已被锁定"), HttpStatus.FORBIDDEN);
 
         try {
             if (!user.getPassword().equals(MD5.md5(loginUser.getPassword())))
-                return new ResponseEntity<JMessage>(new JMessage("Error: Password is not correct"), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<JMessage>(new JMessage("错误:密码错误"), HttpStatus.FORBIDDEN);
         }   catch (Exception e) {
-            return new ResponseEntity<JMessage>(new JMessage("Error: System error"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<JMessage>(new JMessage("错误:系统错误"), HttpStatus.FORBIDDEN);
         }
 
         model.addAttribute("currentUser", user);
-        return new ResponseEntity<JMessage>(new JMessage("OK: Login succeeded"), HttpStatus.OK);
+        return new ResponseEntity<JMessage>(new JMessage("成功:用户 " + user.getUsername() + " 登录"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "api/logout", method = RequestMethod.GET)
