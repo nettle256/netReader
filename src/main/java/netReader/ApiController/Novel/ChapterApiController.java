@@ -6,6 +6,8 @@ import netReader.JsonModel.JArticle;
 import netReader.JsonModel.JChapter;
 import netReader.JsonModel.JMessage;
 import netReader.Model.*;
+import netReader.Translate.Baidu.BaiduTranslate;
+import netReader.Translate.Translate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,14 @@ public class ChapterApiController {
     private ArticleRepository articleRepository;
 
     @Autowired
+    private TranslationRepository translationRepository;
+
+    @Autowired
     private ImportNovel importNovel;
+
+
+    @Autowired
+    private Translate translate;
 
     @RequestMapping(value="/chapter", method = RequestMethod.GET)
     public @ResponseBody List<Chapter> getChapter(
@@ -50,6 +59,26 @@ public class ChapterApiController {
         Novel novel = novelRepository.findById(novelId);
         Chapter chapter = chapterRepository.findByNovelIdAndSubId(novelId, subId);
         return new JArticle(novel, chapter, articleRepository.findById(chapter.getArticleId()));
+    }
+
+    @RequestMapping(value="/chapter/{subId}/translation", method = RequestMethod.GET)
+    public @ResponseBody List<Translation> getTranslationList(
+            @PathVariable(value = "novelId") Long novelId,
+            @PathVariable(value = "subId") Long subId
+    ) {
+        try {
+            Chapter chapter = chapterRepository.findByNovelIdAndSubId(novelId, subId);
+            List<Translation> ret = translationRepository.findAllBySrcId(chapter.getId());
+            if (ret.size() < 1) {
+                Translation translation = new Translation(chapter.getId(), null, "BaiduTranslate");
+                translationRepository.save(translation);
+                ret.add(translation);
+            }
+            return ret;
+        }   catch (Exception e) {
+            System.out.println(e.toString());
+            return new ArrayList<Translation>();
+        }
     }
 
     @RequestMapping(value="/chapter/{subId}", method = RequestMethod.PUT)

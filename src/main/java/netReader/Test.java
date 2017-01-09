@@ -1,13 +1,10 @@
 package netReader;
 
-import netReader.Controller.User.UserAuthority;
-import netReader.JsonModel.JMessage;
-import netReader.Model.User;
+import netReader.Translate.Baidu.BaiduTranslate;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Nettle on 2017/1/5.
@@ -18,13 +15,17 @@ import org.springframework.web.bind.annotation.*;
 public class Test {
 
     @Autowired
-    private UserAuthority userAuthority;
+    private static BaiduTranslate baiduTranslate;
 
-    @RequestMapping(value = "api/test", method = RequestMethod.GET)
-    public ResponseEntity<JMessage> test(
-    ) {
-        return new ResponseEntity<JMessage>(new JMessage("flag is true"), HttpStatus.BAD_REQUEST);
-    }
     public static void main(String[] args) {
+        try {
+            JSONObject json= new JSONObject(baiduTranslate.getTransResult("「戻りました。遅くなってごめんなさい」", "jp", "zh"));
+            JSONArray tpArr = json.getJSONArray("trans_result");
+            JSONObject item = (JSONObject) tpArr.get(0);
+            String zhs = (String) item.get("dst");
+            System.out.println(zhs);
+        }   catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 }
