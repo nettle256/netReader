@@ -8,7 +8,8 @@ netReader
             restrict: 'E',
             replace: true,
             scope: {
-                article: '=article'
+                article: '=article',
+                author: '=author'
             },
             templateUrl: '/html/novel/articleTemplate',
             link: function (scope, element, attrs) {
@@ -20,7 +21,8 @@ netReader
             restrict: 'E',
             replace: true,
             scope: {
-                article: '=article'
+                translation: '=translation',
+                original: '=original'
             },
             templateUrl: '/html/novel/translationTemplate',
             link: function (scope, element, attrs) {

@@ -2,12 +2,12 @@ netReader
     .config(['$stateProvider', function($stateProvider) {
         $stateProvider
             .state('article', {
-                url: '/novel/{novelId}/chapter/{subId}',
+                url: '/novel/{novelId:[0-9]+}/chapter/{subId:[0-9]+}',
                 templateUrl: '/html/novel/article',
                 controller: 'articleCtrl'
             })
     }])
-    .controller('articleCtrl', ['$scope', '$http', '$state', '$stateParams', function ($scope, $http, $state, $stateParams) {
+    .controller('articleCtrl', ['$scope', '$http', '$state', '$stateParams', '$timeout', function ($scope, $http, $state, $stateParams, $timeout) {
         $http
             .get(['api','novel', $stateParams.novelId, 'chapter', $stateParams.subId].join('/'))
             .then(function (result) {
@@ -17,6 +17,17 @@ netReader
                 $scope.subTitle = $scope.chapter.cnSubTitle;
             }, function (result) {
                 mdui.alert('失败：未知错误');
+            });
+
+        $http
+            .get(['api', 'novel', $stateParams.novelId, 'chapter', $stateParams.subId, 'translation'].join('/'))
+            .then(function (result) {
+                $scope.transList = result.data.map(function (d) {
+                    d.selected = false;
+                    return d;
+                });
+            }, function (result) {
+                mdui.alert(result.data);
             });
 
         $scope.updateSubTitle = function () {
@@ -29,6 +40,21 @@ netReader
                 }, function (result) {
                     mdui.alert(result.data);
                 });
-        }
+        };
+
+        $scope.translations = [];
+        $scope.transList = null;
+
+        $scope.showTranslation = function (translation) {
+            translation.selected = true;
+            $http
+                .get(['api','translation', translation.id].join('/'))
+                .then(function (result) {
+                    translation.content = result.data.content;
+                    translation.selected = true;
+                }, function (result) {
+                    mdui.alert(result.data);
+                });
+        };
 
     }]);

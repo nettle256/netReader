@@ -1,12 +1,19 @@
 <div class="net_reader_honbun">
     <div class=" net_reader_body net_reader_article">
         <div class="panel-header">
-            <div class="nr-header-text" ng-bind="title"></div>
+            <div class="nr-header-text">{{translation.author}}</div>
             <i class="mdui-icon material-icons mdui-text-color-white nr-header-btn pull-right" title="关闭原文">&#xe5cd;</i>
         </div>
         <div class="panel-body">
-            <div ng-repeat="line in article track by $index" class="nr_line">
-                {{line}}
+            <div ng-if="translation.content &amp;&amp; translation.content.length > 0" ng-repeat="line in translation.content track by $index" class="nr_line">
+                <div class="original_line">{{original[$index]}}</div>
+                <div class="trans_line" ng-bind="line"></div>
+            </div>
+            <div class="translation_loading" ng-if="!translation.content">
+                翻译载入中...请稍后
+                <div class="mdui-progress">
+                    <div class="mdui-progress-indeterminate"></div>
+                </div>
             </div>
         </div>
         <div class="panel-footer"></div>

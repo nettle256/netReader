@@ -6,7 +6,7 @@ netReader
     .config(['$stateProvider', function($stateProvider) {
         $stateProvider
             .state('chapter', {
-                url: '/novel/{novelId}/chapter',
+                url: '/novel/{novelId:[0-9]+}/chapter',
                 templateUrl: '/html/novel/chapter',
                 controller: 'chapterCtrl'
             })

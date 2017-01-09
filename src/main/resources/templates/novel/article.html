@@ -17,12 +17,22 @@
             <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised tool-btn-web">Web</button>
         </a>
         <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised tool-btn-article" title="显示原文">あ</button>
-        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" title="显示机器翻译">
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" title="显示译文"
+                mdui-dialog="{target: '#translation_list'}">
             <i class="mdui-icon material-icons">&#xe927;</i>
         </button>
+        <div class="mdui-dialog" id="translation_list">
+            <div class="mdui-dialog-title">选择要阅读的译文</div>
+            <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
+                <button class="mdui-btn mdui-ripple" mdui-dialog-close="" ng-repeat="translation in transList | filter:{selected:false}"
+                        ng-click="showTranslation(translation)">
+                    {{translation.author}}
+                </button>
+            </div>
+        </div>
     </div>
     <div class="nr_container">
-        <net-reader-article article="chapter.content" title="原文"></net-reader-article>
-        <net-reader-article article="chapter.content"></net-reader-article>
+        <net-reader-article article="chapter.content" author="'原文'"></net-reader-article>
+        <net-reader-translation ng-repeat="translation in transList | filter:{selected:true}" translation="translation" original="chapter.content"></net-reader-translation>
     </div>
 </div>
