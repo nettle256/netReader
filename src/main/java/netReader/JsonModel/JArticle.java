@@ -20,6 +20,7 @@ public class JArticle {
     private String author;
     private List content;
     private String url;
+    private Long chapters;
 
     public Long getNovelId() {
         return novelId;
@@ -93,6 +94,14 @@ public class JArticle {
         this.url = url;
     }
 
+    public Long getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(Long chapters) {
+        this.chapters = chapters;
+    }
+
     public JArticle(Novel novel, Chapter chapter, Article article) {
         this.novelId = novel.getId();
         this.subId = chapter.getSubId();
@@ -104,5 +113,6 @@ public class JArticle {
         JSONArray json = new JSONArray(article.getContent());
         this.content = (List) json.toList();
         this.url = novel.getUrl() + this.subId;
+        this.chapters = novel.getChapters();
     }
 }

@@ -12,6 +12,7 @@ netReader
             })
     }])
     .controller('chapterCtrl', ['$scope', '$http', '$state', '$stateParams', function ($scope, $http, $state, $stateParams) {
+        $scope.order = true;
         $http
             .get(['api','novel', $stateParams.novelId].join('/'))
             .then(function (result) {

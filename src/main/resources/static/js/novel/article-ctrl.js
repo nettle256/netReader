@@ -57,4 +57,10 @@ netReader
                 });
         };
 
+        $scope.top = function () {
+            $('html body').animate({                 //添加animate动画效果
+                scrollTop: 0
+            }, 500);
+        }
+
     }]);

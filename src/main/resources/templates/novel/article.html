@@ -35,4 +35,17 @@
         <net-reader-article article="chapter.content" author="'原文'"></net-reader-article>
         <net-reader-translation ng-repeat="translation in transList | filter:{selected:true}" translation="translation" original="chapter.content"></net-reader-translation>
     </div>
+    <div class="tool-btn-bottom">
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-white mdui-color-theme mdui-ripple mdui-btn-raised  tool-btn" title="前一篇"
+            ng-disabled="chapter.subId == 1" ui-sref="article({novelId:chapter.novelId, subId:chapter.subId - 1})">
+            <i class="mdui-icon material-icons">&#xe314;</i>
+        </button>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-white mdui-color-theme mdui-ripple mdui-btn-raised  tool-btn" title="后一篇"
+                ng-disabled="chapter.subId == chapter.chapters"  ui-sref="article({novelId:chapter.novelId, subId:chapter.subId + 1})">
+            <i class="mdui-icon material-icons">&#xe315;</i>
+        </button>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-white mdui-color-theme mdui-ripple mdui-btn-raised tool-btn" title="返回顶部" ng-click="top()">
+            <i class="mdui-icon material-icons">&#xe5d8;</i>
+        </button>
+    </div>
 </div>

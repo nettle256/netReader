@@ -17,6 +17,10 @@
         <a href="{{novel.url}}" title="查看原文网站" target="_blank">
             <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised tool-btn-web">Web</button>
         </a>
+        <button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" title="章节顺序" ng-click="order = !order">
+            <i class="mdui-icon material-icons" ng-hide="order">&#xe316;</i>
+            <i class="mdui-icon material-icons" style="margin-top: 2px;" ng-show="order">&#xe313;</i>
+        </button>
         <!--<div ng-if="user.authority == 'user_admin' || user.authority == 'admin'">-->
             <!--<button class="mdui-btn mdui-btn-icon mdui-text-color-theme mdui-ripple tool-btn pull-right mdui-btn-raised" ui-sref="novel_new">-->
                 <!--<i class="mdui-icon material-icons">&#xe145;</i>-->
@@ -37,7 +41,15 @@
             <!--</ul>-->
         <!--</div>-->
     </div>
-    <div class="mdui-table-fluid mdui-shadow-0">
+
+    <div ng-hide="chapters" class="loading">
+        目录载入中...请稍后
+        <div class="mdui-progress">
+            <div class="mdui-progress-indeterminate"></div>
+        </div>
+    </div>
+
+    <div ng-if="chapters" class="mdui-table-fluid mdui-shadow-0">
         <table class="mdui-table mdui-table-hoverable">
             <thead>
             <tr class="mdui-text-color-theme">
@@ -49,7 +61,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="chapter in chapters | filter:keyword">
+            <tr ng-if="chapters.length > 0" ng-repeat="chapter in chapters | filter:keyword | orderBy:'id':order">
                 <td ui-sref="article({novelId:novel.id,subId:chapter.subId})">{{'# ' + chapter.subId}}</td>
                 <td ui-sref="article({novelId:novel.id,subId:chapter.subId})" ng-bind="chapter.subTitle">爱书的下克上</td>
                 <td ui-sref="article({novelId:novel.id,subId:chapter.subId})" ng-bind="chapter.cnSubTitle || '暂无译名'">香月美夜</td>
@@ -58,6 +70,11 @@
                     <button class="mdui-btn mdui-btn-icon mdui-ripple novel-config" title="重新扫描" ng-click="rescan(chapter)">
                         <i class="mdui-icon material-icons">&#xe5d5;</i>
                     </button>
+                </td>
+            </tr>
+            <tr ng-if="chapters.length == 0">
+                <td colspan="5" style="text-align: center">
+                    该小说尚无章节
                 </td>
             </tr>
             </tbody>
