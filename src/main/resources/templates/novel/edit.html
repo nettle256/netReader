@@ -48,7 +48,7 @@
             </button>
             <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" ng-click="cancel()">{{novelForm.$dirty ? '取消' : '返回'}}</button>
             <button ng-if="!isNew" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme pull-right" ng-click="delete()" ng-disabled="deleting">{{novel.deleted ? '恢复' : '删除'}}</button>
-            <button ng-if="!isNew" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme pull-right" ng-click="scan()" ng-disabled="novel.scanSubmit || novel.scanning">{{novel.scanSubmit ? '申请扫描中' : novel.scanning ? '正在扫描章节':'扫描章节'}}</button>
+            <button ng-if="!isNew" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme pull-right" ng-click="scan()" ng-disabled="novel.scanSubmit">{{novel.scanSubmit ? '扫描中' : '扫描新章节'}}</button>
         </div>
     </form>
 </div>

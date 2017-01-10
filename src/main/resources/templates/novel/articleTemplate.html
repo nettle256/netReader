@@ -5,8 +5,14 @@
             <i class="mdui-icon material-icons mdui-text-color-white nr-header-btn pull-right" title="关闭原文">&#xe5cd;</i>
         </div>
         <div class="panel-body">
-            <div ng-repeat="line in article track by $index" class="nr_line">
+            <div ng-if="article &amp;&amp; article.length > 0" ng-repeat="line in article track by $index" class="nr_line">
                 {{line}}
+            </div>
+            <div class="nr_loading" ng-if="!article">
+                文章载入中...请稍后
+                <div class="mdui-progress">
+                    <div class="mdui-progress-indeterminate"></div>
+                </div>
             </div>
         </div>
         <div class="panel-footer"></div>

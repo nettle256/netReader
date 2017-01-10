@@ -4,10 +4,7 @@ import netReader.Controller.Spider.ImportNovel;
 import netReader.Controller.Spider.ScheduleUpdate;
 import netReader.Controller.User.UserAuthority;
 import netReader.JsonModel.JMessage;
-import netReader.Model.Article;
-import netReader.Model.Novel;
-import netReader.Model.NovelRepository;
-import netReader.Model.User;
+import netReader.Model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,17 +83,17 @@ public class NovelApiController {
         }
     }
 
-    @RequestMapping(value="/{id}/import", method = RequestMethod.PUT)
+    @RequestMapping(value="/{id}/scan", method = RequestMethod.PUT)
     public ResponseEntity<Novel> importNovel(
             @PathVariable(value="id") Long id,
             @SessionAttribute(value="currentUser", required=false) User currentUser
     )   {
-        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.ADMIN, currentUser))
+        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
             return new ResponseEntity<Novel>((Novel) null, HttpStatus.FORBIDDEN);
 
         try {
-            importNovel.run(novelRepository.findById(id));
-            return new ResponseEntity<Novel>((Novel) null, HttpStatus.ACCEPTED);
+            importNovel.importChapters(novelRepository.findById(id));
+            return new ResponseEntity<Novel>(novelRepository.findById(id), HttpStatus.ACCEPTED);
         }   catch (Exception e) {
             return new ResponseEntity<Novel>((Novel) null, HttpStatus.NOT_ACCEPTABLE);
         }
@@ -138,24 +135,24 @@ public class NovelApiController {
         }
     }
 
-    @RequestMapping(value="/{id}/scan", method = RequestMethod.PUT)
-    public ResponseEntity<JMessage> scanNovel(
-            @PathVariable(value="id") Long id,
-            @SessionAttribute(value="currentUser", required=false) User currentUser
-    )   {
-        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
-            return new ResponseEntity<JMessage>(new JMessage("错误：没有权限"), HttpStatus.FORBIDDEN);
-
-        try {
-            Novel novel = novelRepository.findById(id);
-            if (novel.getScanning())
-                return new ResponseEntity<JMessage>(new JMessage("错误：该小说正在扫描中"), HttpStatus.FORBIDDEN);
-            novel.setScanning(true);
-            importNovel.run(novel);
-            novelRepository.save(novel);
-            return new ResponseEntity<JMessage>(new JMessage("成功：开始扫描小说 " + novel.getName()), HttpStatus.OK);
-        }   catch (Exception e) {
-            return new ResponseEntity<JMessage>(new JMessage("错误：系统错误"), HttpStatus.NOT_ACCEPTABLE);
-        }
-    }
+//    @RequestMapping(value="/{id}/scan", method = RequestMethod.PUT)
+//    public ResponseEntity<JMessage> scanNovel(
+//            @PathVariable(value="id") Long id,
+//            @SessionAttribute(value="currentUser", required=false) User currentUser
+//    )   {
+//        if (!UserAuthority.checkCurrentUserAuthority(UserAuthority.USER_ADMIN, currentUser))
+//            return new ResponseEntity<JMessage>(new JMessage("错误：没有权限"), HttpStatus.FORBIDDEN);
+//
+//        try {
+//            Novel novel = novelRepository.findById(id);
+//            if (novel.getScanning())
+//                return new ResponseEntity<JMessage>(new JMessage("错误：该小说正在扫描中"), HttpStatus.FORBIDDEN);
+//            novel.setScanning(true);
+//            importNovel.run(novel);
+//            novelRepository.save(novel);
+//            return new ResponseEntity<JMessage>(new JMessage("成功：开始扫描小说 " + novel.getName()), HttpStatus.OK);
+//        }   catch (Exception e) {
+//            return new ResponseEntity<JMessage>(new JMessage("错误：系统错误"), HttpStatus.NOT_ACCEPTABLE);
+//        }
+//    }
 }

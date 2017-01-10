@@ -28,8 +28,6 @@ public class Novel {
 
     private Long chapters = 0L;
 
-    private Boolean scanning = false;
-
     public Long getId() {
         return id;
     }
@@ -94,11 +92,4 @@ public class Novel {
         this.chapters = chapters;
     }
 
-    public Boolean getScanning() {
-        return scanning;
-    }
-
-    public void setScanning(Boolean scanning) {
-        this.scanning = scanning;
-    }
 }

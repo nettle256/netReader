@@ -1,9 +1,15 @@
 package netReader.Controller.Spider;
 
+import netReader.Model.Chapter;
+import netReader.Model.Novel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nettle on 2017/1/4.
@@ -55,6 +61,14 @@ public class Syosetu {
         ret.put("title", document.select(".novel_subtitle").html());
         ret.put("content", article_content);
 
+        return ret;
+    }
+
+    public static List<String> AnalysisChapters(Document document) {
+        List<String> ret = new ArrayList<String>();
+        Elements elements = document.select(".index_box a");
+        for (int i = 0; i < elements.size(); ++i)
+            ret.add(elements.get(i).html());
         return ret;
     }
 }

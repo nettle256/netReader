@@ -52,13 +52,21 @@ public class ChapterApiController {
     }
 
     @RequestMapping(value="/chapter/{subId}", method = RequestMethod.GET)
-    public @ResponseBody JArticle getArticle(
+    public ResponseEntity<JArticle> getArticle(
             @PathVariable(value = "novelId") Long novelId,
             @PathVariable(value = "subId") Long subId
     ) {
         Novel novel = novelRepository.findById(novelId);
         Chapter chapter = chapterRepository.findByNovelIdAndSubId(novelId, subId);
-        return new JArticle(novel, chapter, articleRepository.findById(chapter.getArticleId()));
+        if (chapter.getArticleId() == null) {
+            try {
+                Article article = importNovel.importNovelById(novelRepository.findById(novelId), subId);
+                return new ResponseEntity<JArticle>(new JArticle(novel, chapter, article), HttpStatus.OK);
+            }   catch (Exception e) {
+                return new ResponseEntity<JArticle>((JArticle) null, HttpStatus.NOT_ACCEPTABLE);
+            }
+        }
+        return new ResponseEntity<JArticle>(new JArticle(novel, chapter, articleRepository.findById(chapter.getArticleId())), HttpStatus.OK);
     }
 
     @RequestMapping(value="/chapter/{subId}/translation", method = RequestMethod.GET)

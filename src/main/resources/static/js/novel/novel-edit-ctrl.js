@@ -163,7 +163,7 @@ netReader
            $http
                .put(['api','novel', $scope.novel.id, 'scan'].join('/'), {})
                .then(function (result) {
-                   $scope.novel.scanning = true;
+                   $.extend($scope.novel, result.data);
                    $scope.novel.scanSubmit = false;
                }, function (result) {
                    if (result.status == 403)

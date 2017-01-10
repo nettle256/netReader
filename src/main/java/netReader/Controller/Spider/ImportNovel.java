@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 /**
  * Created by Nettle on 2017/1/4.
  */
@@ -29,25 +31,36 @@ public class ImportNovel {
 
         Chapter chapter = chapterRepository.findByNovelIdAndSubId(novel.getId(), id);
         Article article = new Article();
-        if (chapter == null) {
-            chapter = new Chapter();
-        }   else {
-            article = articleRepository.findById(chapter.getArticleId());
-        }
 
         article.setContent(data.get("content").toString());
         articleRepository.save(article);
 
-        chapter.setNovelId(novel.getId());
-        chapter.setSubId(id);
-        chapter.setSubTitle(data.get("title").toString());
+        if (chapter.getNovelId() == null) chapter.setNovelId(novel.getId());
+        if (chapter.getSubId() == null) chapter.setSubId(id);
+        if (chapter.getSubTitle() == null) chapter.setSubTitle(data.get("title").toString());
         chapter.setArticleId(article.getId());
         chapterRepository.save(chapter);
 
-        novel.setChapters(id);
-        novelRepository.save(novel);
-
         return article;
+    }
+
+    public void importChapters(Novel novel) {
+        List<Chapter> chapters = new ArrayList<Chapter>();
+        try {
+            List<String> data = Syosetu.AnalysisChapters(Spider.getHtml(novel.getUrl()));
+            for (Long i = novel.getChapters(); i < data.size(); ++i) {
+                Chapter chapter = new Chapter();
+                chapter.setNovelId(novel.getId());
+                chapter.setSubTitle(data.get(i.intValue()));
+                chapter.setSubId(i + 1);
+                chapters.add(chapter);
+            }
+            novel.setChapters((long) data.size());
+            chapterRepository.save(chapters);
+            novelRepository.save(novel);
+        }   catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 
     @Async
@@ -60,12 +73,14 @@ public class ImportNovel {
                 importNovelById(novel, id);
                 Thread.sleep(SLEEP_TIMES);
             }   catch (Exception e) {
-                novel.setScanning(false);
                 novelRepository.save(novel);
                 System.out.println(e.toString());
                 System.out.println("Error occurred @ Get novel 《" + novel.getName() + "》 chapter " + id);
                 break;
             }
         }
+    }
+
+    public static void main(String[] args) {
     }
 }
